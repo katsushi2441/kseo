@@ -1,0 +1,17 @@
+[Unit]
+Description=Kurage SEO (kseo) - Japanese SEO audit API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/kojima/work/kseo
+EnvironmentFile=/home/kojima/work/kseo/.env
+ExecStart=/home/kojima/work/kseo/.venv/bin/python -m app
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

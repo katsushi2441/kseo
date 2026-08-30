@@ -1,0 +1,4 @@
+<?php
+// このファイルを kseo_config.php として heteml に配置する。秘密はrepoに置かない。
+define('KSEO_API_BASE', 'http://127.0.0.1:18345');
+define('KSEO_API_TOKEN', 'replace-with-a-long-random-token');

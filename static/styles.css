@@ -1,0 +1,163 @@
+/* Kurage SEO — kgeoのWhite Studioと同じ family。
+   アクセントだけ藍寄り(#1d6fa5)にして、AI検索のkgeo(aqua)と見分けられるようにする。 */
+:root {
+  --bg: #f5f8fb;
+  --panel: #ffffff;
+  --line: #dde6ee;
+  --text: #15334a;
+  --muted: #667b8b;
+  --primary: #1d6fa5;
+  --primary-dark: #14567f;
+  --critical: #c0392b;
+  --warning: #c77700;
+  --info: #4b7a94;
+  --good: #1f8a5f;
+  --radius: 14px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Noto Sans JP", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", sans-serif;
+  line-height: 1.75;
+}
+
+h1, h2, h3 { font-family: "Zen Maru Gothic", "Noto Sans JP", sans-serif; line-height: 1.4; }
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+/* 左上のブランドは必ず自分自身へのリンク。押せば初期表示に戻るのが常識。 */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--text);
+}
+.brand-name { font-family: "Zen Maru Gothic", sans-serif; font-weight: 700; font-size: 1.15rem; }
+.usage { color: var(--muted); font-size: .85rem; }
+
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 60px; }
+
+.hero h1 { font-size: 1.7rem; margin: 12px 0 8px; }
+.hero p { color: var(--muted); margin: 0 0 8px; }
+.hero code {
+  background: #eaf1f7; padding: 1px 6px; border-radius: 5px; font-size: .92em;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 20px;
+}
+.panel > h2 { margin: 0 0 14px; font-size: 1.15rem; }
+
+.site-form { display: grid; gap: 12px; grid-template-columns: 1fr 1fr auto; align-items: end; }
+.site-form label { display: grid; gap: 6px; font-size: .85rem; color: var(--muted); }
+.site-form input {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  color: var(--text);
+  background: #fff;
+}
+.site-form input:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+button {
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+button:hover { background: #f0f5f9; }
+button.primary { background: var(--primary); border-color: var(--primary); color: #fff; font-weight: 700; }
+button.primary:hover { background: var(--primary-dark); }
+button:disabled { opacity: .55; cursor: progress; }
+
+.note { color: var(--muted); font-size: .85rem; min-height: 1.2em; margin: 10px 0 0; }
+.note.error { color: var(--critical); }
+.muted { color: var(--muted); }
+
+.site-list { display: grid; gap: 12px; }
+.site-card {
+  display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  border: 1px solid var(--line); border-radius: 12px; padding: 14px; flex-wrap: wrap;
+}
+.site-card .meta { min-width: 0; }
+.site-card .meta strong { display: block; }
+.site-card .meta a { color: var(--muted); font-size: .85rem; word-break: break-all; }
+.site-card .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.score-badge {
+  font-family: "Zen Maru Gothic", sans-serif;
+  font-weight: 700; font-size: 1.5rem;
+  min-width: 74px; text-align: center;
+  padding: 6px 10px; border-radius: 10px; background: #eef4f9;
+}
+.score-badge.good { color: var(--good); background: #e8f6ef; }
+.score-badge.mid { color: var(--warning); background: #fdf3e3; }
+.score-badge.bad { color: var(--critical); background: #fbeceb; }
+
+.summary { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.summary .verdict { font-weight: 700; }
+
+.cats { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); margin: 16px 0 22px; }
+.cat { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.cat .label { font-size: .82rem; color: var(--muted); }
+.cat .bar { height: 6px; border-radius: 3px; background: #e8eef4; margin-top: 6px; overflow: hidden; }
+.cat .bar span { display: block; height: 100%; background: var(--primary); }
+.cat .value { font-weight: 700; }
+
+.finding {
+  border: 1px solid var(--line); border-left-width: 4px; border-radius: 10px;
+  padding: 12px 14px; margin-bottom: 10px;
+}
+.finding.critical { border-left-color: var(--critical); }
+.finding.warning { border-left-color: var(--warning); }
+.finding.info { border-left-color: var(--info); }
+.finding .sev {
+  font-size: .74rem; font-weight: 700; padding: 2px 8px; border-radius: 999px;
+  background: #eef4f9; color: var(--muted);
+}
+.finding.critical .sev { background: #fbeceb; color: var(--critical); }
+.finding.warning .sev { background: #fdf3e3; color: var(--warning); }
+.finding .msg { font-weight: 700; margin: 6px 0 4px; }
+.finding .ev, .finding .act { font-size: .87rem; color: var(--muted); word-break: break-word; }
+.finding .ev b, .finding .act b { color: var(--text); font-weight: 500; }
+.finding .url { font-size: .78rem; color: var(--muted); word-break: break-all; }
+
+.advice {
+  background: #f7fbfd; border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px; margin-top: 18px; white-space: pre-wrap;
+}
+.advice h3 { margin-top: 0; }
+
+footer { border-top: 1px solid var(--line); padding: 18px; text-align: center; color: var(--muted); font-size: .85rem; }
+
+@media (max-width: 720px) {
+  .site-form { grid-template-columns: 1fr; }
+  .site-form button { width: 100%; }
+  .site-card { align-items: flex-start; }
+  .site-card .actions { width: 100%; }
+  .site-card .actions button { flex: 1; }
+}
