@@ -131,12 +131,15 @@ function kseo_proxy($method, $path, $user) {
 
 // --- API中継 ---------------------------------------------------------------
 if (isset($_GET['api'])) {
-    if (!$logged_in) {
-        kseo_error(401, 'ログインが必要です。');
-    }
     $path = (string)$_GET['api'];
     if ($path === '' || $path[0] !== '/') {
         $path = '/' . $path;
+    }
+    // /health は利用者データを返さないので未ログインでも通す。外形監視から
+    // 「公開URL経由でバックエンドまで生きているか」を1回で確かめるための穴。
+    // それ以外は必ずログインを要求する。
+    if ($path !== '/health' && !$logged_in) {
+        kseo_error(401, 'ログインが必要です。');
     }
     // パス以外は通さない(クエリ経由の別経路呼び出しを防ぐ)。
     if (strpos($path, '..') !== false || strpos($path, '?') !== false) {
@@ -173,7 +176,7 @@ $owner_label = htmlspecialchars($act_as !== '' ? $act_as . '（代理）' : $ses
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/kseo_static/styles.css">
+<link rel="stylesheet" href="/assets/kseo.css">
 </head>
 <body>
 <header class="topbar">
@@ -251,8 +254,10 @@ $owner_label = htmlspecialchars($act_as !== '' ? $act_as . '（代理）' : $ses
     csrf: <?= json_encode($csrf) ?>
   };
 </script>
-<script src="/kseo_static/app.js"></script>
+<script src="/assets/kseo.js"></script>
 <?php endif; ?>
-<script src="/simpletrack.php?p=kseo" async></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
+<script>(function(){var s=document.createElement('script');s.src='https://kurage.exbridge.jp/simpletrack.php?url='+encodeURIComponent(location.href)+'&ref='+encodeURIComponent(document.referrer);document.head.appendChild(s)})();</script>
 </body>
 </html>

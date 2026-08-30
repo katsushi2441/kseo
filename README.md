@@ -56,11 +56,11 @@ python3 -m pytest tests/ -q
 
 ## 公開
 
-`public/kseo.php` を heteml の kurage ドメインに置き、`kseo_config.php` に
-バックエンドのURLと内部トークンを書く。X認証とCSRFはこのPHPが持ち、
-FastAPI 側は内部トークンだけを見る（認証を2か所に置かない）。
+**https://kurage.exbridge.jp/kseo.php**
 
-`static/` は `/kseo_static/` として同じドメインに配置する。
+`bash scripts/deploy.sh` で heteml へ配置する。X認証とCSRFは `public/kseo.php`
+が持ち、FastAPI 側は内部トークンだけを見る（認証を2か所に置かない）。
+経路と注意点は [OPERATIONS.md](OPERATIONS.md) を参照。
 
 ## ポート
 

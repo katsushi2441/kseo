@@ -42,9 +42,30 @@ curl -s http://127.0.0.1:18345/health
 第1号は exbridge.jp の charset 誤検知（`http-equiv="Content-Type"` 形式を
 見落として「charset宣言なし」と出した）。
 
-## 公開側
+## 公開
 
-- `public/kseo.php` を heteml の kurage ドメインへ
-- `public/kseo_config.php`（gitignore 済み）に `KSEO_API_BASE` と `KSEO_API_TOKEN`
-- `static/` を `/kseo_static/` へ
-- 内部トークンは `.env` の `KSEO_INTERNAL_TOKEN` と一致させる
+**公開URL: https://kurage.exbridge.jp/kseo.php**
+
+    ブラウザ → kurage.exbridge.jp/kseo.php (heteml)
+            → exbridge.ddns.net:18345 (ルーターNAT)
+            → このマシンの kseo.service
+
+配置は `bash scripts/deploy.sh`（FTP。認証は `aixec/.env` から読む）。
+送るのは kseo.php / kseo_config.php / assets/kseo.css / assets/kseo.js の4つ。
+
+**バックエンドは `0.0.0.0` にbindする必要がある**（`KSEO_HOST=0.0.0.0`）。
+127.0.0.1 のままだと heteml から到達できず、画面は出るが全操作が503になる。
+ルーターは18300番台を範囲転送しているので、ポート開放の手作業は要らない
+（`ss -ltn` で 0.0.0.0 になっていれば外から届く）。
+
+インターネットに直接口が開くので、**内部トークンが唯一の守り**になる。
+`.env` の `KSEO_INTERNAL_TOKEN` と `public/kseo_config.php` の
+`KSEO_API_TOKEN` は必ず一致させ、どちらもgitに入れない。
+
+### 公開経路の生死確認
+
+    curl -s "https://kurage.exbridge.jp/kseo.php?api=/health"
+
+`/health` だけは未ログインで通す（利用者データを返さないため）。これが200なら
+heteml→ルーター→バックエンドまで生きている。他の経路は未ログインだと401。
+バックエンド側のログに heteml のIP(157.7.188.210)が出ることでも確かめられる。
