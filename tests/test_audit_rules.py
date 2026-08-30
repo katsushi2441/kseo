@@ -269,3 +269,23 @@ def test_canonical_from_index_html_to_directory_is_not_a_conflict():
 def test_normalize_url_treats_directory_index_as_root():
     assert normalize_url("https://a.jp/index.html") == normalize_url("https://a.jp/")
     assert normalize_url("https://a.jp/sub/index.php") == normalize_url("https://a.jp/sub/")
+
+
+def test_score_rounds_half_up_to_match_php():
+    """0.5は切り上げる。組み込みround()の銀行家丸めだとPHP版と1点ずれる。
+
+    kseo.exbridge.jp で meta=98(Python) 対 99(PHP) の食い違いが実際に出た。
+    2ページでinfo1件 → 減点3/2=1.5 → 100-1.5=98.5 が境界。
+    """
+    assert audit_rules._round_half_up(98.5) == 99
+    assert audit_rules._round_half_up(97.5) == 98
+    assert audit_rules._round_half_up(98.4) == 98
+
+    page = build(HEALTHY)
+    findings = [
+        audit_rules.Finding(
+            "meta.description.too_long", "meta", "info", page.url, "m", "e", "a"
+        )
+    ]
+    result = audit_rules.score(findings, 2)
+    assert result["categories"]["meta"]["score"] == 99

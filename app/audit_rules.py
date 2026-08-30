@@ -12,6 +12,7 @@ title 60文字/description 160文字を前提にするが、日本語は全角�
 from __future__ import annotations
 
 import dataclasses
+import math
 import re
 import unicodedata
 from urllib.parse import urljoin, urlparse
@@ -516,6 +517,17 @@ def check_site(site, pages) -> list[Finding]:
 # --- 採点 -------------------------------------------------------------------
 
 
+def _round_half_up(value: float) -> int:
+    """0.5は切り上げる。
+
+    組み込みの round() は銀行家丸め(round-half-to-even)で、round(98.5)=98 に
+    なる。点数としては直感に反するうえ、PHP版の round() は半数切り上げなので
+    同じサイトで1点ずれる(実際に kseo.exbridge.jp で98対99の食い違いが出た)。
+    両実装を揃えるため、ここで丸め方を固定する。スコアは常に正の値。
+    """
+    return int(math.floor(value + 0.5))
+
+
 def score(findings: list[Finding], page_count: int = 1) -> dict:
     """カテゴリ別と総合のスコア。100点から減点する。
 
@@ -533,13 +545,13 @@ def score(findings: list[Finding], page_count: int = 1) -> dict:
 
     categories = {}
     for key, penalty in per_category.items():
-        value = max(0, min(100, round(100 - penalty / pages)))
+        value = max(0, min(100, _round_half_up(100 - penalty / pages)))
         categories[key] = {"label": CATEGORY_LABELS.get(key, key), "score": value}
 
     # 総合はカテゴリの平均にしない。10カテゴリの平均だと、1カテゴリが壊滅
     # していても総合は90点台に見えてしまい、noindexで全ページ検索圏外という
     # 最悪の状態を「おおむね良好」と伝えることになる。減点の総量で出す。
-    overall = max(0, min(100, round(100 - sum(
+    overall = max(0, min(100, _round_half_up(100 - sum(
         SEVERITY_WEIGHT.get(f.severity, 5) for f in findings
     ) / pages)))
     return {

@@ -1,0 +1,37 @@
+<?php
+/**
+ * Kurage SEO（PHP版）の設定。
+ *
+ * このファイルを kseo_config.php という名前にコピーして編集してください。
+ * （.example のままだと読み込まれません）
+ */
+
+// 画面のタイトル
+define('KSEO_TITLE', 'SEO診断');
+
+// 管理画面のパスワード。空にすると鍵なしで開けます。
+// ハッシュは scripts/make_password_hash.php で作れます。
+// 社外から見える場所に置くなら、必ず設定してください。
+define('KSEO_PASSWORD_HASH', '');
+
+// 1回に診断できる最大ページ数。
+define('KSEO_MAX_PAGES', 20);
+
+// 1ページごとの待ち時間（秒）。
+// 短くすると診断は速くなりますが、相手のサーバーに連続アクセスします。
+// 他社サイトを診断する業務で使うなら 1.0 以上を維持してください。
+define('KSEO_CRAWL_DELAY', 1.0);
+
+// 1ページの取得を諦めるまでの秒数。
+define('KSEO_TIMEOUT', 20);
+
+// 診断結果を何件残すか。古いものから消えます。
+define('KSEO_KEEP_AUDITS', 50);
+
+// 診断結果の保存先。Webから読めない場所にするのが安全です。
+// define('KSEO_DATA_DIR', __DIR__ . '/kseo_data');
+
+// 社内サイト（プライベートIP）を診断したいときだけ true。
+// ★これを true にした状態で外部に公開しないでください。
+//   任意のURLを投げられるため、社内のサーバーを読む踏み台にされます。
+define('KSEO_ALLOW_PRIVATE', false);

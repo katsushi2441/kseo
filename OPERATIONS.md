@@ -69,3 +69,23 @@ curl -s http://127.0.0.1:18345/health
 `/health` だけは未ログインで通す（利用者データを返さないため）。これが200なら
 heteml→ルーター→バックエンドまで生きている。他の経路は未ログインだと401。
 バックエンド側のログに heteml のIP(157.7.188.210)が出ることでも確かめられる。
+
+## PHP版（kappstore で販売している版）
+
+`php/` に、同じ判定を1ファイルPHPに移植した版がある。レンタルサーバーに
+FTPで置くだけで動く形で、データベースも外部ライブラリも使わない。
+
+- 自己テスト: `php php/scripts/check_kseo.php`
+- **本家との突き合わせ: `python3 scripts/crosscheck_php_python.py <URL> [ページ数]`**
+
+**移植でいちばん危ないのは本家と食い違うこと。** 点数が違えば、どちらを
+信じればいいのか利用者に説明できない。判定を1つでも変えたら、必ず
+crosscheck を実サイトで通してから配布する。
+
+実際に見つかった食い違い(2026-08-31): PHPの`round()`は半数切り上げ、
+Pythonの`round()`は銀行家丸めで、`round(98.5)` が 99 対 98 になっていた。
+Python側に `_round_half_up()` を入れて切り上げに統一した。
+一致を確認した実サイト: exbridge.jp / kseo.exbridge.jp / kappstore.exbridge.jp / php.net
+
+デモは heteml の `proto.exbridge.jp/kseo/`(パスワードは kappstore の商品説明に
+記載)。配布zipは `php/` から作る。`kseo_config.php` は同梱しない。

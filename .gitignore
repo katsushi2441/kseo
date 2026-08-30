@@ -8,3 +8,6 @@ __pycache__/
 .ruff_cache/
 public/kseo_config.php
 dist/kseo.zip
+dist/kseo-php.zip
+php/kseo_config.php
+php/kseo_data/audit-*.json
