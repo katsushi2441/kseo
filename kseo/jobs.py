@@ -23,7 +23,7 @@ def ollama_chat_job(
     serialized = json.dumps(messages, ensure_ascii=False)
     if len(serialized) > 120_000:
         raise RuntimeError("messages are too large")
-    ollama_url = os.environ.get("KSEO_OLLAMA_BASE_URL", "http://192.168.0.14:11434").rstrip("/")
+    ollama_url = os.environ.get("KSEO_OLLAMA_BASE_URL", "http://127.0.0.1:11434").rstrip("/")
     payload = {
         "model": str(model),
         "messages": messages,
@@ -56,6 +56,6 @@ def ollama_chat_job(
         "response_chars": len(text),
         "model": str(model),
         "source": source,
-        "ollama_host": "192.168.0.14",
+        "ollama_host": ollama_url,
         "note": "KGeo grounded evaluation completed through the 0.14 Ollama queue",
     }

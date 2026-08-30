@@ -76,10 +76,19 @@ def validate_public_url(raw: str) -> str:
     return urlunparse(parsed)
 
 
+# ディレクトリの既定ファイル。/index.html から / へのcanonicalは正しい作法
+# なので、これを「別ページを指している」と言ってはいけない(自社LPで誤検知)。
+DIRECTORY_INDEX = ("index.html", "index.htm", "index.php", "default.html")
+
+
 def normalize_url(url: str) -> str:
-    """フラグメントと末尾スラッシュの揺れを吸収して同一ページを重複させない。"""
+    """フラグメント・末尾スラッシュ・既定ファイル名の揺れを吸収する。"""
     parsed = urlparse(url)
     path = parsed.path or "/"
+    for name in DIRECTORY_INDEX:
+        if path.endswith("/" + name):
+            path = path[: -len(name)]
+            break
     if len(path) > 1 and path.endswith("/"):
         path = path.rstrip("/")
     return urlunparse((parsed.scheme, parsed.netloc, path, "", parsed.query, ""))

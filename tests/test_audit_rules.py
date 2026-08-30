@@ -218,3 +218,54 @@ def test_public_url_is_accepted():
 def test_normalize_url_removes_fragment_and_trailing_slash():
     assert normalize_url("https://a.jp/x/#top") == "https://a.jp/x"
     assert normalize_url("https://a.jp/") == "https://a.jp/"
+
+
+# --- 自社LPのドッグフーディングで見つけた誤検知（2026-08-31） --------------
+
+
+def test_english_page_with_japanese_language_link_is_not_japanese():
+    """英語ページの言語切替リンク「日本語」だけで日本語ページ扱いしない。
+
+    kseo.exbridge.jp/ (英語LP) に lang不一致 を出した誤検知の再現。
+    """
+    html = (
+        '<!doctype html><html lang="en"><head><meta charset="utf-8">'
+        "<title>Kurage SEO for Japanese pages</title>"
+        '<meta name="description" content="' + ("word " * 30) + '">'
+        '<link rel="canonical" href="https://example.com/page">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<meta property="og:title" content="t"><meta property="og:description" content="d">'
+        '<meta property="og:image" content="https://example.com/o.png">'
+        '<script type="application/ld+json">{"@type":"BreadcrumbList"}</script>'
+        "</head><body>"
+        '<a href="page.html">日本語</a>'  # ← これだけで日本語ページにしない
+        "<h1>Hello</h1><p>" + ("content " * 200) + "</p>"
+        '<a href="https://example.com/x">next</a></body></html>'
+    )
+    page = build(html)
+    rules = {f.rule for f in audit_rules.check_page(page)}
+    assert "japanese.lang.mismatch" not in rules
+    assert "japanese.lang.missing" not in rules
+
+
+def test_real_japanese_page_is_still_detected():
+    """割合判定にしても、本物の日本語ページは取りこぼさない。"""
+    html = HEALTHY.replace('<html lang="ja">', '<html lang="en">')
+    rules = {f.rule for f in audit_rules.check_page(build(html))}
+    assert "japanese.lang.mismatch" in rules
+
+
+def test_canonical_from_index_html_to_directory_is_not_a_conflict():
+    """/index.html から / への canonical は正しい作法。別ページ扱いしない。"""
+    page = build(
+        HEALTHY.replace('href="https://example.com/page"', 'href="https://example.com/"'),
+        url="https://example.com/index.html",
+    )
+    assert page.canonical_conflict is False
+    rules = {f.rule for f in audit_rules.check_page(page)}
+    assert "meta.canonical.conflict" not in rules
+
+
+def test_normalize_url_treats_directory_index_as_root():
+    assert normalize_url("https://a.jp/index.html") == normalize_url("https://a.jp/")
+    assert normalize_url("https://a.jp/sub/index.php") == normalize_url("https://a.jp/sub/")

@@ -3,9 +3,17 @@ from __future__ import annotations
 import asyncio
 from typing import Any
 
+from urllib.parse import urlparse
+
 import httpx
 
 from . import config
+
+
+def _ollama_host() -> str:
+    """キュー名に使うホスト。rqdb4aiはホスト別に直列化してGPU競合を防ぐので、
+    ここを固定値にすると設定を変えても同じキューへ流れてしまう。"""
+    return urlparse(config.OLLAMA_BASE_URL).hostname or "localhost"
 
 
 def configured() -> bool:
@@ -34,9 +42,9 @@ def enqueue_payload(messages: list[dict[str, str]]) -> dict[str, Any]:
             "app": "kseo",
             "kind": "ollama_chat",
             "resource": "ollama",
-            "resource_key": f"ollama:192.168.0.14:{config.OLLAMA_MODEL}",
-            "ollama_host": "192.168.0.14",
-            "ollama_endpoint": "http://192.168.0.14:11434",
+            "resource_key": f"ollama:{_ollama_host()}:{config.OLLAMA_MODEL}",
+            "ollama_host": _ollama_host(),
+            "ollama_endpoint": config.OLLAMA_BASE_URL,
             "ollama_model": config.OLLAMA_MODEL,
             "source": "web_online",
             "queue_class": "web",

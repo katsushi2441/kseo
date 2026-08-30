@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kurage SEO — 日本語サイトのSEOを、実測で診断する</title>
+<meta name="description" content="Kurage SEO(kseo)は、日本語サイトの技術SEOを実測で診断するツールです。タイトルの長さを全角で数え、文字コード宣言やlang属性まで確認。判定はすべて決定論的で、AIの推測は入りません。Web版は月3回無料、買い切りのセルフホスト版もあります。">
+<meta name="keywords" content="Kurage,kseo,SEO診断,SEOチェックツール,日本語SEO,技術SEO,サイト診断 無料,内部SEO,SEO 監査,セルフホスト SEOツール">
+<meta name="robots" content="index,follow">
+<meta name="author" content="EXBRIDGE, Inc.">
+<link rel="canonical" href="https://kseo.exbridge.jp/kseo.html">
+<link rel="alternate" hreflang="en" href="https://kseo.exbridge.jp/">
+<link rel="alternate" hreflang="ja" href="https://kseo.exbridge.jp/kseo.html">
+<link rel="icon" href="assets/kurage_avatar.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/kurage_avatar.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kurage SEO">
+<meta property="og:title" content="Kurage SEO — 日本語サイトのSEOを、実測で診断する">
+<meta property="og:description" content="タイトルの長さは全角で数える。文字コードもlang属性も見る。判定は決定論的、改善案だけAIが書きます。月3回無料。">
+<meta property="og:url" content="https://kseo.exbridge.jp/kseo.html">
+<meta property="og:image" content="https://kseo.exbridge.jp/assets/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kurage SEO">
+<meta name="twitter:description" content="日本語サイトのSEOを実測で診断。判定は決定論的、改善案だけAIが書きます。">
+<meta name="twitter:image" content="https://kseo.exbridge.jp/assets/ogp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Kurage SEO",
+  "url": "https://kseo.exbridge.jp/kseo.html",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "ja",
+  "description": "日本語サイトの技術SEOを実測で診断するツール。タイトルの長さを全角で数え、文字コード宣言やlang属性まで確認する。判定は決定論的で、改善案の文章だけを言語モデルが書く。",
+  "offers": [
+    {"@type": "Offer", "name": "Web版 無料枠", "price": "0", "priceCurrency": "JPY", "description": "Xアカウントごとに月3回まで無料で診断できる"},
+    {"@type": "Offer", "name": "買い切りセルフホスト版", "price": "55000", "priceCurrency": "JPY", "description": "自社サーバーで回数制限なく動かせる買い切り版（税込）"}
+  ],
+  "publisher": {"@type": "Organization", "name": "株式会社エクスブリッジ", "url": "https://exbridge.jp/"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "kseo",
+  "codeRepository": "https://github.com/katsushi2441/kseo",
+  "programmingLanguage": "Python",
+  "license": "https://github.com/katsushi2441/kseo/blob/main/README.md"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"他のSEOチェックツールと何が違いますか。","acceptedAnswer":{"@type":"Answer","text":"日本語の閾値で測ることです。英語圏のツールはタイトルを60文字前後で判定しますが、日本語は全角で数えないと合いません。Kurage SEOは全角を1文字、半角を0.5文字として数え、全角32文字を超えたら「検索結果で切れます」と実測値つきで指摘します。文字コード宣言やlang属性、全角英数字の混在など、日本語サイトでだけ問題になる項目も見ます。"}},
+    {"@type":"Question","name":"AIが採点しているのですか。","acceptedAnswer":{"@type":"Answer","text":"いいえ。判定は全て決定論的なチェックで、同じページなら何度測っても同じ結果になります。言語モデルを使うのは改善案の文章を書くところだけで、そこにも実測値しか渡していません。同じページを2回見て違う答えが出る道具は、監査として使えないためです。"}},
+    {"@type":"Question","name":"検索順位や検索ボリュームは出ますか。","acceptedAnswer":{"@type":"Answer","text":"出しません。順位・検索ボリューム・被リンクは外部の有料データを買わないと取れないため、この製品では扱わない範囲と決めています。扱うのは「自分のサイトを見れば分かること」だけです。持っていないデータをそれらしく見せることはしません。"}},
+    {"@type":"Question","name":"何ページまで診断できますか。","acceptedAnswer":{"@type":"Answer","text":"Web版の無料枠は1回あたり5ページまで、月3回までです。買い切りのセルフホスト版は自社サーバーで動かすので、ページ数も回数もご自身で決められます。"}},
+    {"@type":"Question","name":"診断結果は持ち出せますか。","acceptedAnswer":{"@type":"Answer","text":"はい。指摘ごとに「実測値」と「どう直すか」を並べたMarkdownの診断書をダウンロードできます。そのままお客様に渡せる形にしてあります。"}},
+    {"@type":"Question","name":"ソースコードは公開されていますか。","acceptedAnswer":{"@type":"Answer","text":"はい。GitHubで公開しています。どの数字をどう測って何点になったのかを、コードで確かめられます。"}}
+  ]
+}
+</script>
+<style>
+:root {
+  --abyss:#14293c; --abyss-soft:#5a6f80; --foam:#f5f8fb; --panel:#e9f0f6; --panel-line:#d3e2ee;
+  --teal:#1d6fa5; --teal-deep:#14567f; --violet:#6f5fd8; --gold:#c98a1e; --gold-bg:#fbf2db; --gold-line:#ecd9a8;
+  --shadow:0 14px 40px rgba(10,40,45,.10);
+}
+@media (prefers-color-scheme:dark){:root{
+  --abyss:#e9f1f7; --abyss-soft:#9db0c0; --foam:#0d1721; --panel:#132330; --panel-line:#22394b;
+  --teal:#5aaede; --teal-deep:#8cc7ec; --violet:#9186ea; --gold:#f2c766; --gold-bg:#241b08; --gold-line:#4c3c17;
+  --shadow:0 14px 40px rgba(0,0,0,.38);
+}}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { color:var(--abyss); font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",Meiryo,sans-serif; background:var(--foam); min-height:100vh; line-height:1.8; overflow-x:hidden; }
+a { color:var(--teal-deep); text-decoration:none; }
+a:hover { color:var(--teal); }
+img { max-width:100%; }
+h1,h2,h3 { font-family:"Zen Maru Gothic","Zen Kaku Gothic New",sans-serif; text-wrap:balance; }
+.wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+header.site { position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--foam) 88%,transparent); backdrop-filter:blur(16px); border-bottom:1px solid var(--panel-line); }
+header.site .wrap { display:flex; align-items:center; gap:14px; padding:12px 24px; }
+.hbrand { display:flex; gap:12px; align-items:center; }
+.hbrand .ico { width:40px; height:40px; border-radius:50%; overflow:hidden; border:2px solid var(--teal); flex:none; }
+.hbrand .ico img { width:100%; height:100%; object-fit:cover; object-position:50% 15%; }
+.hbrand strong { font-size:15px; font-weight:900; display:block; line-height:1.2; }
+.hbrand span { font-size:11px; color:var(--abyss-soft); }
+.hnav { display:flex; gap:8px; align-items:center; margin-left:auto; }
+.btn { border-radius:999px; padding:10px 18px; font-weight:900; font-size:13px; display:inline-flex; align-items:center; gap:7px; border:1.5px solid transparent; cursor:pointer; }
+.btn-primary { background:linear-gradient(135deg,var(--teal),var(--teal-deep)); color:#fff; box-shadow:0 10px 24px rgba(29,111,165,.28); }
+.btn-ghost { background:transparent; border-color:var(--panel-line); color:var(--abyss-soft); }
+.btn-ghost:hover { border-color:var(--teal); color:var(--teal-deep); }
+.hero { display:grid; grid-template-columns:1.25fr .75fr; gap:40px; align-items:center; padding:56px 0 34px; }
+.eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--panel); border:1.5px solid var(--panel-line); border-radius:999px; padding:7px 14px; font-size:12px; font-weight:900; color:var(--teal-deep); margin-bottom:18px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--teal); }
+h1 { font-size:clamp(26px,4.4vw,42px); font-weight:900; line-height:1.3; letter-spacing:-.01em; margin-bottom:16px; }
+h1 em { font-style:normal; color:var(--teal-deep); }
+.lead { font-size:15.5px; color:var(--abyss-soft); max-width:600px; margin-bottom:24px; }
+.lead b { color:var(--abyss); }
+.cta-row { display:flex; gap:10px; flex-wrap:wrap; }
+.hero-card { background:var(--panel); border:1.5px solid var(--panel-line); border-radius:28px; padding:24px; text-align:center; box-shadow:var(--shadow); }
+.hero-card img { width:180px; height:180px; object-fit:cover; object-position:50% 12%; border-radius:22px; }
+.hero-card h2 { font-size:15px; margin:14px 0 4px; }
+.hero-card p { font-size:12.5px; color:var(--abyss-soft); }
+section { padding:34px 0; }
+section > h2 { font-size:clamp(20px,3vw,27px); font-weight:900; margin-bottom:6px; }
+section > .sub { color:var(--abyss-soft); font-size:14px; font-weight:700; margin-bottom:24px; }
+.flow { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+.flow .step { background:var(--foam); border:1.5px solid var(--panel-line); border-radius:18px; padding:20px 16px; box-shadow:var(--shadow); }
+.flow .n { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--teal); color:#fff; font-family:"Zen Maru Gothic",sans-serif; font-weight:900; margin-bottom:10px; }
+.flow .step b { display:block; font-size:14.5px; margin-bottom:5px; }
+.flow .step small { font-size:12.5px; color:var(--abyss-soft); line-height:1.7; }
+.chips { display:flex; flex-wrap:wrap; gap:10px; }
+.chip { background:var(--panel); border:1.5px solid var(--panel-line); border-radius:14px; padding:14px 18px; font-weight:700; font-size:14px; }
+.chip span { display:block; font-size:12px; color:var(--abyss-soft); font-weight:500; margin-top:3px; }
+.gate { background:var(--gold-bg); border:1.5px solid var(--gold-line); border-radius:24px; padding:28px; box-shadow:var(--shadow); }
+.gate h2 { color:var(--gold); }
+.gate ul { list-style:none; margin-top:14px; display:grid; gap:10px; }
+.gate li { font-size:14px; padding-left:26px; position:relative; }
+.gate li::before { content:"✓"; position:absolute; left:0; color:var(--gold); font-weight:900; }
+.oss-note { background:var(--foam); border:1.5px solid var(--panel-line); border-radius:24px; padding:28px; box-shadow:var(--shadow); }
+.oss-note p { font-size:14px; color:var(--abyss-soft); margin-top:10px; }
+.oss-note p b, .oss-note a { color:var(--abyss); }
+.oss-note a { font-weight:800; color:var(--teal-deep); }
+.oss-note small { display:block; margin-top:10px; font-size:12px; color:var(--abyss-soft); }
+.eco { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+.eco a { background:var(--foam); border:1.5px solid var(--panel-line); border-radius:999px; padding:9px 16px; font-size:13px; font-weight:800; color:var(--teal-deep); }
+.eco a:hover { border-color:var(--teal); }
+footer.site { text-align:center; color:var(--abyss-soft); font-size:12.5px; padding:44px 20px 54px; border-top:1px solid var(--panel-line); margin-top:24px; }
+footer.site a { font-weight:700; }
+@media (max-width:760px){ .hero{ grid-template-columns:1fr; } .hero-card{ order:-1; } }
+</style>
+</head>
+<body>
+
+<header class="site"><div class="wrap">
+  <a class="hbrand" href="kseo.html" aria-label="Kurage SEO">
+    <div class="ico"><img src="assets/kurage_avatar.webp" alt="Kurage"></div>
+    <div><strong>Kurage SEO</strong><span>株式会社エクスブリッジのプロダクト</span></div>
+  </a>
+  <nav class="hnav">
+    <a class="btn btn-ghost" href="index.html">English</a>
+    <a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">診断を始める</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>技術SEO ・ 日本語サイト向け</span>
+      <h1>日本語サイトのSEOを、<em>実測で診断する。</em></h1>
+      <p class="lead">
+        <b>Kurage SEO</b> は、あなたのサイトを実際にクロールして、
+        <b>タイトルの長さを全角で数え、文字コード宣言やlang属性まで</b>確認する診断ツールです。
+        判定はすべて決定論的なチェックで、<b>AIの推測は入りません</b>。
+        点数だけで終わらせず、指摘ごとに「実測値」と「どう直すか」を出します。
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">月3回まで無料で診断する</a>
+        <a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img src="assets/kurage_avatar.png" alt="Kurage — クラゲのAI VTuber">
+      <h2>Kurageさん</h2>
+      <p>エクスブリッジのクラゲAI VTuber。あなたのサイトの技術SEOを診断します。</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>英語圏のツールで測ると、日本語サイトは誤判定される</h2>
+    <p class="sub">
+      多くのSEOチェックツールは、タイトルを「60文字以内」で判定します。これは半角英数字の基準です。
+      日本語のタイトルを同じ物差しで測ると、実際には検索結果で切れているのに「問題なし」と出ます。
+    </p>
+    <div class="flow">
+      <div class="step">
+        <h3>全角で数える</h3>
+        <p>
+          全角を1文字、半角を0.5文字として数えます。
+          <b>「AI活用」は3文字</b>——英数字混じりの日本語タイトルも、実際の見え方に近い値で測れます。
+          全角32文字を超えたら、実測値つきで「検索結果で末尾が切れます」と指摘します。
+        </p>
+      </div>
+      <div class="step">
+        <h3>日本語でだけ問題になる項目を見る</h3>
+        <p>
+          <b>lang属性</b>が無い・英語になっている、<b>文字コード宣言</b>が無い、
+          <b>文字化け</b>している、タイトルに<b>全角の英数字</b>が混ざって半角検索と一致しない。
+          英語圏のツールが見ない項目です。
+        </p>
+      </div>
+      <div class="step">
+        <h3>根拠の数字を必ず添える</h3>
+        <p>
+          「タイトルが長い」ではなく<b>「全角換算65文字」</b>と出します。
+          何を測ってその判定になったのかが分かるので、直したあとに測り直せば効果を確認できます。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>診断でわかること</h2>
+    <p class="sub">10カテゴリを、実際にページを取得して確認します。</p>
+    <div class="chips">
+      <span class="chip">クロール・インデックス</span>
+      <span class="chip">タイトル・説明文</span>
+      <span class="chip">見出し構造</span>
+      <span class="chip">構造化データ</span>
+      <span class="chip">SNS表示(OGP)</span>
+      <span class="chip">コンテンツ</span>
+      <span class="chip">モバイル対応</span>
+      <span class="chip">表示速度</span>
+      <span class="chip">HTTPS・安全性</span>
+      <span class="chip">日本語サイト固有</span>
+    </div>
+    <div class="flow">
+      <div class="step">
+        <h3>検索結果に出ない状態を見つける</h3>
+        <p>
+          <b>noindexの付け忘れ</b>、robots.txtでサイト全体を拒否している、
+          canonicalが別ページを指している、sitemap.xmlが無い、リダイレクトの連鎖。
+          「順位が上がらない」の前に、そもそも出ていないことがあります。
+        </p>
+      </div>
+      <div class="step">
+        <h3>ページをまたいで初めて分かること</h3>
+        <p>
+          複数ページを見て、<b>同じタイトル・同じ説明文</b>を使い回していないかを突き合わせます。
+          どれを検索結果に出すかGoogleが選べなくなる状態です。リンク切れも実際に叩いて確認します。
+        </p>
+      </div>
+      <div class="step">
+        <h3>そのまま渡せる診断書</h3>
+        <p>
+          指摘ごとに「実測値」と「どう直すか」を並べたMarkdownをダウンロードできます。
+          重大度の順に並んでいるので、<b>上から順に潰せば終わる</b>形にしてあります。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="oss-note">
+    <h2>判定にAIを使わない理由</h2>
+    <p>
+      同じページを2回見て違う答えが出る道具は、監査として売り物になりません。
+      Kurage SEOの判定は<b>すべて閾値との比較</b>で、入力が同じなら出力も同じになります。
+    </p>
+    <p>
+      言語モデルが登場するのは、<b>改善案の文章を書くところだけ</b>です。
+      そこにも実測済みの指摘しか渡していないので、モデルが数字を作る余地がありません。
+      無料枠と管理者は自社GPUで動くGemma、有料の実行はDeepSeekを使います。
+    </p>
+    <p>
+      検索順位・検索ボリューム・被リンクは<b>出しません</b>。
+      外部の有料データを買わないと取れないものなので、扱わない範囲だと決めています。
+      持っていないデータをそれらしく見せることはしません。
+    </p>
+  </section>
+
+  <section>
+    <h2>料金</h2>
+    <div class="flow">
+      <div class="step">
+        <h3>Web版 — 月3回まで無料</h3>
+        <p>
+          Xアカウントでログインすれば、<b>月3回・1回5ページまで無料</b>で診断できます。
+          登録も支払いも要りません。まず自社サイトを1回測ってみてください。
+        </p>
+        <p><a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">無料で診断する</a></p>
+      </div>
+      <div class="step">
+        <h3>買い切り版 — 55,000円（税込）</h3>
+        <p>
+          自社サーバーで動かす買い切り版です。<b>回数制限もページ数制限もありません</b>。
+          制作会社の方が、お客様のサイトを何度でも診断して診断書を出す使い方を想定しています。
+          月額はありません。
+        </p>
+        <p><a class="btn btn-ghost" href="https://kappstore.exbridge.jp/" target="_blank" rel="noopener">kappstoreで見る</a></p>
+      </div>
+      <div class="step">
+        <h3>ソースコードは公開しています</h3>
+        <p>
+          どの数字をどう測って何点になったのかを、コードで確かめられます。
+          買う前に中身を見て判断してください。
+        </p>
+        <p><a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHubで見る</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="eco">
+    <h2>Kurageシリーズ</h2>
+    <p class="sub">検索は今、Googleと生成AIの2つに分かれました。両方を別々に見ます。</p>
+    <div class="flow">
+      <div class="step">
+        <h3>Kurage SEO（このページ）</h3>
+        <p><b>Google検索</b>向けの技術SEO診断。タイトル・構造化データ・表示速度・日本語固有の項目を実測します。</p>
+      </div>
+      <div class="step">
+        <h3>Kurage GEO</h3>
+        <p><b>AI検索</b>向けの診断。ChatGPTなどに理解・引用されやすいかを日本語で採点します。</p>
+        <p><a class="btn btn-ghost" href="https://kgeo.exbridge.jp/kgeo.html">kgeo.exbridge.jp</a></p>
+      </div>
+      <div class="step">
+        <h3>そのほかの製品</h3>
+        <p>買い切りの業務システムを揃えています。月額に縛られない選択肢です。</p>
+        <p><a class="btn btn-ghost" href="https://kappstore.exbridge.jp/" target="_blank" rel="noopener">kappstore</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>よくある質問</h2>
+    <div class="flow">
+      <div class="step">
+        <h3>他のSEOチェックツールと何が違いますか。</h3>
+        <p>日本語の閾値で測ることです。英語圏のツールはタイトルを60文字前後で判定しますが、日本語は全角で数えないと合いません。全角32文字を超えたら実測値つきで指摘します。文字コード宣言やlang属性、全角英数字の混在など、日本語サイトでだけ問題になる項目も見ます。</p>
+      </div>
+      <div class="step">
+        <h3>AIが採点しているのですか。</h3>
+        <p>いいえ。判定はすべて決定論的なチェックで、同じページなら何度測っても同じ結果になります。言語モデルを使うのは改善案の文章だけです。</p>
+      </div>
+      <div class="step">
+        <h3>検索順位や検索ボリュームは出ますか。</h3>
+        <p>出しません。外部の有料データを買わないと取れないため、扱わない範囲と決めています。持っていないデータをそれらしく見せることはしません。</p>
+      </div>
+      <div class="step">
+        <h3>何ページまで診断できますか。</h3>
+        <p>Web版の無料枠は1回5ページ・月3回までです。買い切り版は自社サーバーで動かすので、ページ数も回数もご自身で決められます。</p>
+      </div>
+      <div class="step">
+        <h3>診断結果は持ち出せますか。</h3>
+        <p>はい。指摘ごとに実測値と対応方法を並べたMarkdownの診断書をダウンロードできます。そのままお客様に渡せる形にしてあります。</p>
+      </div>
+      <div class="step">
+        <h3>相手のサイトに負担をかけませんか。</h3>
+        <p>1ページごとに間隔を空けて取得し、robots.txtを読みます。リンク切れの確認も件数に上限を設けています。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="gate">
+    <h2>まず、自社サイトを1回測ってみてください。</h2>
+    <p>月3回まで無料です。Xアカウントでログインするだけで始められます。</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">無料で診断する</a>
+      <a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site"><div class="wrap">
+  <p>
+    <a href="index.html">English</a> ·
+    <a href="https://kgeo.exbridge.jp/kgeo.html">Kurage GEO</a> ·
+    <a href="https://kappstore.exbridge.jp/" target="_blank" rel="noopener">kappstore</a> ·
+    <a href="https://exbridge.jp/">株式会社エクスブリッジ</a>
+  </p>
+  <p>&copy; EXBRIDGE, Inc.</p>
+</div></footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
+<script>(function(){var s=document.createElement('script');s.src='https://kurage.exbridge.jp/simpletrack.php?url='+encodeURIComponent(location.href)+'&ref='+encodeURIComponent(document.referrer);document.head.appendChild(s)})();</script>
+</body>
+</html>

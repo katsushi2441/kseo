@@ -86,8 +86,22 @@ def visible_length(text: str) -> int:
     return int(width + 0.999)
 
 
+# 日本語ページと見なす下限。英語ページの言語切替リンク(「日本語」の3文字)や
+# 社名の1語だけで日本語ページ扱いすると、lang="en" が正しいページに
+# 「lang不一致」を出してしまう(自社LPで実際に出した)。
+JAPANESE_MIN_CHARS = 40
+JAPANESE_MIN_RATIO = 0.08
+
+
 def has_japanese(text: str) -> bool:
-    return bool(re.search(r"[ぁ-んァ-ヶ一-龥]", text or ""))
+    """本文が日本語で書かれていると言えるか。数文字の混在では真としない。"""
+    value = text or ""
+    if not value:
+        return False
+    hits = len(re.findall(r"[ぁ-んァ-ヶ一-龥]", value))
+    if hits < JAPANESE_MIN_CHARS:
+        return False
+    return hits / len(value) >= JAPANESE_MIN_RATIO
 
 
 def _norm(text: str | None) -> str:

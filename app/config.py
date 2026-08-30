@@ -37,11 +37,10 @@ RQDB4AI_FUNCTION = (
 )
 RQDB4AI_POLL_INTERVAL = max(0.5, float(os.environ.get("KSEO_RQDB4AI_POLL_INTERVAL", "2")))
 RQDB4AI_WAIT_TIMEOUT = max(30.0, float(os.environ.get("KSEO_RQDB4AI_WAIT_TIMEOUT", "300")))
-# 直叩きの既定は 192.168.0.3。192.168.0.14 は rqdb4ai がホスト別キューで
-# 直列化してGPU競合を防ぐ経路専用なので、直接叩いてはいけない。
-# rqdb4ai を設定した場合だけそちら経由になる(下の RQDB4AI_URL)。
+# 既定はOllamaの標準ポート。別ホストで動かしているなら .env で指定する。
+# rqdb4ai を設定した場合だけ、そちらのキュー経由になる(下の RQDB4AI_URL)。
 OLLAMA_BASE_URL = (
-    os.environ.get("KSEO_OLLAMA_BASE_URL", "").strip() or "http://192.168.0.3:11434"
+    os.environ.get("KSEO_OLLAMA_BASE_URL", "").strip() or "http://127.0.0.1:11434"
 ).rstrip("/")
 OLLAMA_MODEL = os.environ.get("KSEO_OLLAMA_MODEL", "").strip() or "gemma4:12b-it-qat"
 OLLAMA_TIMEOUT = float(os.environ.get("KSEO_OLLAMA_TIMEOUT", "180"))

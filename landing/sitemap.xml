@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://kseo.exbridge.jp/</loc>
+    <lastmod>2026-08-31</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kseo.exbridge.jp/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://kseo.exbridge.jp/kseo.html"/>
+  </url>
+  <url>
+    <loc>https://kseo.exbridge.jp/kseo.html</loc>
+    <lastmod>2026-08-31</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://kseo.exbridge.jp/"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://kseo.exbridge.jp/kseo.html"/>
+  </url>
+</urlset>

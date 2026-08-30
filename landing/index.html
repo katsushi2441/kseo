@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kurage SEO — Technical SEO auditing for Japanese pages</title>
+<meta name="description" content="Kurage SEO (kseo) audits the technical SEO of Japanese websites. It counts title length in full-width characters, checks charset declarations and lang attributes, and every verdict is deterministic — no AI guessing. Free tier on the web, or buy the self-hosted version outright.">
+<meta name="keywords" content="Kurage,kseo,technical SEO,Japanese SEO,SEO audit tool,site audit,self-hosted SEO tool,open source SEO">
+<meta name="robots" content="index,follow">
+<meta name="author" content="EXBRIDGE, Inc.">
+<link rel="canonical" href="https://kseo.exbridge.jp/">
+<link rel="alternate" hreflang="en" href="https://kseo.exbridge.jp/">
+<link rel="alternate" hreflang="ja" href="https://kseo.exbridge.jp/kseo.html">
+<link rel="icon" href="assets/kurage_avatar.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/kurage_avatar.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Kurage SEO">
+<meta property="og:title" content="Kurage SEO — Technical SEO auditing built for Japanese pages">
+<meta property="og:description" content="Counts title length in full-width characters. Checks charset and lang. Deterministic verdicts; AI only writes the fix suggestions.">
+<meta property="og:url" content="https://kseo.exbridge.jp/">
+<meta property="og:image" content="https://kseo.exbridge.jp/assets/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kurage SEO">
+<meta name="twitter:description" content="Technical SEO auditing that actually measures Japanese pages.">
+<meta name="twitter:image" content="https://kseo.exbridge.jp/assets/ogp.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Kurage SEO",
+  "url": "https://kseo.exbridge.jp/",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "en",
+  "description": "Technical SEO auditing for Japanese websites. Title length is counted in full-width characters; charset declarations and lang attributes are checked. Verdicts are deterministic; a language model only writes the fix suggestions.",
+  "offers": [
+    {"@type": "Offer", "name": "Web free tier", "price": "0", "priceCurrency": "JPY", "description": "Three audits per month per X account"},
+    {"@type": "Offer", "name": "Self-hosted licence", "price": "55000", "priceCurrency": "JPY", "description": "One-time purchase, run it on your own server with no limits (tax included)"}
+  ],
+  "publisher": {"@type": "Organization", "name": "EXBRIDGE, Inc.", "url": "https://exbridge.jp/"}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "kseo",
+  "codeRepository": "https://github.com/katsushi2441/kseo",
+  "programmingLanguage": "Python"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"How is this different from other SEO checkers?","acceptedAnswer":{"@type":"Answer","text":"It uses Japanese thresholds. Most tools judge titles against roughly 60 characters, which is a half-width standard. Japanese titles have to be counted in full-width characters or the verdict is wrong. Kurage SEO counts full-width as 1 and half-width as 0.5, and flags anything over 32 full-width characters with the measured value. It also checks things that only break on Japanese sites: charset declarations, lang attributes, mojibake, and full-width alphanumerics in titles."}},
+    {"@type":"Question","name":"Is an AI scoring my site?","acceptedAnswer":{"@type":"Answer","text":"No. Every verdict is a deterministic check, so the same page always produces the same result. A language model is used only to write the fix suggestions, and it is given nothing but the measured findings. A tool that gives two different answers for the same page cannot be used as an audit."}},
+    {"@type":"Question","name":"Does it show rankings or search volume?","acceptedAnswer":{"@type":"Answer","text":"No. Rankings, search volume and backlinks require buying data from a third-party index, so they are outside the scope of this product. It only reports what can be established by looking at your own site. It will not dress up data it does not have."}},
+    {"@type":"Question","name":"How many pages can it audit?","acceptedAnswer":{"@type":"Answer","text":"The free web tier covers five pages per audit, three audits per month. The self-hosted version runs on your own server, so you decide the page count and frequency."}},
+    {"@type":"Question","name":"Can I export the results?","acceptedAnswer":{"@type":"Answer","text":"Yes. You can download a Markdown report that pairs every finding with the measured value and the fix, ordered by severity so you can work top to bottom."}},
+    {"@type":"Question","name":"Is the source available?","acceptedAnswer":{"@type":"Answer","text":"Yes, on GitHub. You can check exactly what is measured and how the score is calculated before you buy anything."}}
+  ]
+}
+</script>
+<style>
+:root {
+  --abyss:#14293c; --abyss-soft:#5a6f80; --foam:#f5f8fb; --panel:#e9f0f6; --panel-line:#d3e2ee;
+  --teal:#1d6fa5; --teal-deep:#14567f; --violet:#6f5fd8; --gold:#c98a1e; --gold-bg:#fbf2db; --gold-line:#ecd9a8;
+  --shadow:0 14px 40px rgba(10,40,45,.10);
+}
+@media (prefers-color-scheme:dark){:root{
+  --abyss:#e9f1f7; --abyss-soft:#9db0c0; --foam:#0d1721; --panel:#132330; --panel-line:#22394b;
+  --teal:#5aaede; --teal-deep:#8cc7ec; --violet:#9186ea; --gold:#f2c766; --gold-bg:#241b08; --gold-line:#4c3c17;
+  --shadow:0 14px 40px rgba(0,0,0,.38);
+}}
+* { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body { color:var(--abyss); font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",Meiryo,sans-serif; background:var(--foam); min-height:100vh; line-height:1.8; overflow-x:hidden; }
+a { color:var(--teal-deep); text-decoration:none; }
+a:hover { color:var(--teal); }
+img { max-width:100%; }
+h1,h2,h3 { font-family:"Zen Maru Gothic","Zen Kaku Gothic New",sans-serif; text-wrap:balance; }
+.wrap { max-width:1000px; margin:0 auto; padding:0 24px; }
+header.site { position:sticky; top:0; z-index:40; background:color-mix(in srgb,var(--foam) 88%,transparent); backdrop-filter:blur(16px); border-bottom:1px solid var(--panel-line); }
+header.site .wrap { display:flex; align-items:center; gap:14px; padding:12px 24px; }
+.hbrand { display:flex; gap:12px; align-items:center; }
+.hbrand .ico { width:40px; height:40px; border-radius:50%; overflow:hidden; border:2px solid var(--teal); flex:none; }
+.hbrand .ico img { width:100%; height:100%; object-fit:cover; object-position:50% 15%; }
+.hbrand strong { font-size:15px; font-weight:900; display:block; line-height:1.2; }
+.hbrand span { font-size:11px; color:var(--abyss-soft); }
+.hnav { display:flex; gap:8px; align-items:center; margin-left:auto; }
+.btn { border-radius:999px; padding:10px 18px; font-weight:900; font-size:13px; display:inline-flex; align-items:center; gap:7px; border:1.5px solid transparent; cursor:pointer; }
+.btn-primary { background:linear-gradient(135deg,var(--teal),var(--teal-deep)); color:#fff; box-shadow:0 10px 24px rgba(29,111,165,.28); }
+.btn-ghost { background:transparent; border-color:var(--panel-line); color:var(--abyss-soft); }
+.btn-ghost:hover { border-color:var(--teal); color:var(--teal-deep); }
+.hero { display:grid; grid-template-columns:1.25fr .75fr; gap:40px; align-items:center; padding:56px 0 34px; }
+.eyebrow { display:inline-flex; align-items:center; gap:8px; background:var(--panel); border:1.5px solid var(--panel-line); border-radius:999px; padding:7px 14px; font-size:12px; font-weight:900; color:var(--teal-deep); margin-bottom:18px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--teal); }
+h1 { font-size:clamp(26px,4.4vw,42px); font-weight:900; line-height:1.3; letter-spacing:-.01em; margin-bottom:16px; }
+h1 em { font-style:normal; color:var(--teal-deep); }
+.lead { font-size:15.5px; color:var(--abyss-soft); max-width:600px; margin-bottom:24px; }
+.lead b { color:var(--abyss); }
+.cta-row { display:flex; gap:10px; flex-wrap:wrap; }
+.hero-card { background:var(--panel); border:1.5px solid var(--panel-line); border-radius:28px; padding:24px; text-align:center; box-shadow:var(--shadow); }
+.hero-card img { width:180px; height:180px; object-fit:cover; object-position:50% 12%; border-radius:22px; }
+.hero-card h2 { font-size:15px; margin:14px 0 4px; }
+.hero-card p { font-size:12.5px; color:var(--abyss-soft); }
+section { padding:34px 0; }
+section > h2 { font-size:clamp(20px,3vw,27px); font-weight:900; margin-bottom:6px; }
+section > .sub { color:var(--abyss-soft); font-size:14px; font-weight:700; margin-bottom:24px; }
+.flow { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; }
+.flow .step { background:var(--foam); border:1.5px solid var(--panel-line); border-radius:18px; padding:20px 16px; box-shadow:var(--shadow); }
+.flow .n { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; border-radius:50%; background:var(--teal); color:#fff; font-family:"Zen Maru Gothic",sans-serif; font-weight:900; margin-bottom:10px; }
+.flow .step b { display:block; font-size:14.5px; margin-bottom:5px; }
+.flow .step small { font-size:12.5px; color:var(--abyss-soft); line-height:1.7; }
+.chips { display:flex; flex-wrap:wrap; gap:10px; }
+.chip { background:var(--panel); border:1.5px solid var(--panel-line); border-radius:14px; padding:14px 18px; font-weight:700; font-size:14px; }
+.chip span { display:block; font-size:12px; color:var(--abyss-soft); font-weight:500; margin-top:3px; }
+.gate { background:var(--gold-bg); border:1.5px solid var(--gold-line); border-radius:24px; padding:28px; box-shadow:var(--shadow); }
+.gate h2 { color:var(--gold); }
+.gate ul { list-style:none; margin-top:14px; display:grid; gap:10px; }
+.gate li { font-size:14px; padding-left:26px; position:relative; }
+.gate li::before { content:"✓"; position:absolute; left:0; color:var(--gold); font-weight:900; }
+.oss-note { background:var(--foam); border:1.5px solid var(--panel-line); border-radius:24px; padding:28px; box-shadow:var(--shadow); }
+.oss-note p { font-size:14px; color:var(--abyss-soft); margin-top:10px; }
+.oss-note p b, .oss-note a { color:var(--abyss); }
+.oss-note a { font-weight:800; color:var(--teal-deep); }
+.oss-note small { display:block; margin-top:10px; font-size:12px; color:var(--abyss-soft); }
+.eco { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+.eco a { background:var(--foam); border:1.5px solid var(--panel-line); border-radius:999px; padding:9px 16px; font-size:13px; font-weight:800; color:var(--teal-deep); }
+.eco a:hover { border-color:var(--teal); }
+footer.site { text-align:center; color:var(--abyss-soft); font-size:12.5px; padding:44px 20px 54px; border-top:1px solid var(--panel-line); margin-top:24px; }
+footer.site a { font-weight:700; }
+@media (max-width:760px){ .hero{ grid-template-columns:1fr; } .hero-card{ order:-1; } }
+</style>
+</head>
+<body>
+
+<header class="site"><div class="wrap">
+  <a class="hbrand" href="index.html" aria-label="Kurage SEO">
+    <div class="ico"><img src="assets/kurage_avatar.webp" alt="Kurage"></div>
+    <div><strong>Kurage SEO</strong><span>A product by EXBRIDGE, Inc.</span></div>
+  </a>
+  <nav class="hnav">
+    <a class="btn btn-ghost" href="kseo.html">日本語</a>
+    <a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHub</a>
+    <a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">Run an audit</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <span class="eyebrow"><span class="dot"></span>Technical SEO ・ built for Japanese pages</span>
+      <h1>SEO auditing that <em>actually measures</em> Japanese pages.</h1>
+      <p class="lead">
+        <b>Kurage SEO</b> crawls your site and checks what English-language tools get wrong about Japanese:
+        it <b>counts title length in full-width characters</b>, and it looks at charset declarations and
+        <code>lang</code> attributes. Every verdict is deterministic — <b>no AI guessing</b>.
+        You get the measured value and the fix, not just a score.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">Audit three sites a month, free</a>
+        <a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img src="assets/kurage_avatar.png" alt="Kurage — the jellyfish AI VTuber">
+      <h2>Kurage</h2>
+      <p>EXBRIDGE's jellyfish AI VTuber. She audits the technical SEO of your site.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>English thresholds give Japanese sites the wrong answer</h2>
+    <p class="sub">
+      Most SEO checkers judge a title against roughly 60 characters. That is a half-width standard.
+      Measure a Japanese title the same way and you get "no problem" for a title that is
+      visibly truncated in the search results.
+    </p>
+    <div class="flow">
+      <div class="step">
+        <h3>Counted in full-width</h3>
+        <p>
+          Full-width counts as 1, half-width as 0.5. <b>"AI活用" is 3 characters</b> — so titles that mix
+          Latin letters into Japanese are measured the way they actually render.
+          Anything over 32 full-width characters is flagged with the number attached.
+        </p>
+      </div>
+      <div class="step">
+        <h3>Checks that only matter in Japanese</h3>
+        <p>
+          A missing or wrong <b>lang attribute</b>, no <b>charset declaration</b>,
+          <b>mojibake</b> from an encoding mismatch, and <b>full-width alphanumerics</b> in a title
+          that will never match a half-width query. English-language tools do not look for these.
+        </p>
+      </div>
+      <div class="step">
+        <h3>Always with the measurement</h3>
+        <p>
+          Not "your title is too long" but <b>"65 full-width characters"</b>.
+          You can see what produced the verdict, fix it, and measure again to confirm.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the audit covers</h2>
+    <p class="sub">Ten categories, checked by actually fetching the pages.</p>
+    <div class="chips">
+      <span class="chip">Crawl &amp; indexing</span>
+      <span class="chip">Titles &amp; descriptions</span>
+      <span class="chip">Heading structure</span>
+      <span class="chip">Structured data</span>
+      <span class="chip">Open Graph</span>
+      <span class="chip">Content</span>
+      <span class="chip">Mobile</span>
+      <span class="chip">Speed</span>
+      <span class="chip">HTTPS &amp; safety</span>
+      <span class="chip">Japanese-specific</span>
+    </div>
+    <div class="flow">
+      <div class="step">
+        <h3>Pages that never appear at all</h3>
+        <p>
+          A <b>stray noindex</b>, a robots.txt that blocks the whole site, a canonical pointing somewhere
+          else, a missing sitemap, chained redirects. Before "we aren't ranking" comes
+          "we aren't in the index".
+        </p>
+      </div>
+      <div class="step">
+        <h3>Problems only visible across pages</h3>
+        <p>
+          It cross-checks pages for <b>duplicate titles and descriptions</b> — the state where Google
+          cannot tell which page to show. Broken links are verified by actually requesting them.
+        </p>
+      </div>
+      <div class="step">
+        <h3>A report you can hand over</h3>
+        <p>
+          Download a Markdown report pairing each finding with its measured value and its fix,
+          ordered by severity so you can <b>work straight down the list</b>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="oss-note">
+    <h2>Why no AI in the verdicts</h2>
+    <p>
+      A tool that gives two different answers for the same page cannot be sold as an audit.
+      Every verdict in Kurage SEO is <b>a comparison against a threshold</b>: same input, same output.
+    </p>
+    <p>
+      A language model appears in exactly one place — <b>writing the fix suggestions</b> — and it is
+      handed nothing but the findings that were already measured, so there is no room for it to
+      invent numbers. The free tier runs Gemma on our own GPU; paid runs use DeepSeek.
+    </p>
+    <p>
+      Rankings, search volume and backlinks are <b>not reported</b>. They require buying data from a
+      third-party index, so they are outside the scope we chose. We will not dress up data we do not have.
+    </p>
+  </section>
+
+  <section>
+    <h2>Pricing</h2>
+    <div class="flow">
+      <div class="step">
+        <h3>Web — three audits a month, free</h3>
+        <p>
+          Sign in with X and run <b>three audits a month, five pages each</b>. No registration form,
+          no card. Measure your own site once and see what comes back.
+        </p>
+        <p><a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">Run a free audit</a></p>
+      </div>
+      <div class="step">
+        <h3>Self-hosted — ¥55,000 one-time</h3>
+        <p>
+          Run it on your own server with <b>no page or frequency limits</b>. Built for agencies who audit
+          client sites repeatedly and hand over the report. No subscription.
+        </p>
+        <p><a class="btn btn-ghost" href="https://kappstore.exbridge.jp/" target="_blank" rel="noopener">See it on kappstore</a></p>
+      </div>
+      <div class="step">
+        <h3>The source is public</h3>
+        <p>
+          Check exactly what is measured and how the score is produced before you decide.
+        </p>
+        <p><a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">Read the code</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="eco">
+    <h2>The Kurage series</h2>
+    <p class="sub">Search has split into Google and generative AI. We measure them separately.</p>
+    <div class="flow">
+      <div class="step">
+        <h3>Kurage SEO (this page)</h3>
+        <p>Technical SEO for <b>Google search</b>: titles, structured data, speed, and Japanese-specific checks.</p>
+      </div>
+      <div class="step">
+        <h3>Kurage GEO</h3>
+        <p>For <b>AI search</b>: how well ChatGPT and similar systems can understand and cite your pages.</p>
+        <p><a class="btn btn-ghost" href="https://kgeo.exbridge.jp/">kgeo.exbridge.jp</a></p>
+      </div>
+      <div class="step">
+        <h3>Other products</h3>
+        <p>Buy-once business systems, as an alternative to stacking monthly subscriptions.</p>
+        <p><a class="btn btn-ghost" href="https://kappstore.exbridge.jp/" target="_blank" rel="noopener">kappstore</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Questions</h2>
+    <div class="flow">
+      <div class="step">
+        <h3>How is this different from other SEO checkers?</h3>
+        <p>It uses Japanese thresholds. Titles are counted in full-width characters and flagged past 32, with the measured number attached. It also checks charset declarations, lang attributes, mojibake and full-width alphanumerics — things that only break on Japanese sites.</p>
+      </div>
+      <div class="step">
+        <h3>Is an AI scoring my site?</h3>
+        <p>No. Every verdict is deterministic, so the same page always gives the same result. A language model only writes the fix suggestions.</p>
+      </div>
+      <div class="step">
+        <h3>Does it show rankings or search volume?</h3>
+        <p>No. Those require buying third-party index data, so they are outside the scope we chose. We will not dress up data we do not have.</p>
+      </div>
+      <div class="step">
+        <h3>How many pages can it audit?</h3>
+        <p>Five pages per audit, three audits a month on the free web tier. The self-hosted version runs on your server, so you set the limits.</p>
+      </div>
+      <div class="step">
+        <h3>Can I export the results?</h3>
+        <p>Yes — a Markdown report pairing each finding with its measured value and its fix, ready to hand to a client.</p>
+      </div>
+      <div class="step">
+        <h3>Will it hammer the site being audited?</h3>
+        <p>No. It waits between page fetches, reads robots.txt, and caps how many links it verifies.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="gate">
+    <h2>Measure your own site once.</h2>
+    <p>Three audits a month, free. Sign in with X and start.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://kurage.exbridge.jp/kseo.php">Run a free audit</a>
+      <a class="btn btn-ghost" href="https://github.com/katsushi2441/kseo" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site"><div class="wrap">
+  <p>
+    <a href="kseo.html">日本語</a> ·
+    <a href="https://kgeo.exbridge.jp/">Kurage GEO</a> ·
+    <a href="https://kappstore.exbridge.jp/" target="_blank" rel="noopener">kappstore</a> ·
+    <a href="https://exbridge.jp/">EXBRIDGE, Inc.</a>
+  </p>
+  <p>&copy; EXBRIDGE, Inc.</p>
+</div></footer>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
+<script>(function(){var s=document.createElement('script');s.src='https://kurage.exbridge.jp/simpletrack.php?url='+encodeURIComponent(location.href)+'&ref='+encodeURIComponent(document.referrer);document.head.appendChild(s)})();</script>
+</body>
+</html>
