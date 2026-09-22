@@ -1479,5 +1479,6 @@ footer{text-align:center;color:var(--muted);font-size:.83rem;padding:16px}
 <?php endif; ?>
 </main>
 <footer>Kurage SEO — 株式会社エクスブリッジ</footer>
+<?php if (($_SERVER['HTTP_HOST'] ?? '') === 'proto.exbridge.jp'): ?><p style="text-align:center;font-size:13px;margin:14px 0;color:#5d6b7a">これはデモです。<a href="https://kappstore.exbridge.jp/app.php?id=c8ffa66502f7d905&amp;ref=kseo" target="_blank" rel="noopener">この製品をオンプレミスで導入する（商品ページ）</a></p><?php endif; ?>
 </body>
 </html>
