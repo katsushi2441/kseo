@@ -259,5 +259,6 @@ $owner_label = htmlspecialchars($act_as !== '' ? $act_as . '（代理）' : $ses
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-BP0650KDFR"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-BP0650KDFR');</script>
 <script>(function(){var s=document.createElement('script');s.src='https://kurage.exbridge.jp/simpletrack.php?url='+encodeURIComponent(location.href)+'&ref='+encodeURIComponent(document.referrer);document.head.appendChild(s)})();</script>
+<?php if (in_array($_SERVER['HTTP_HOST'] ?? '', array('kurage.exbridge.jp', 'proto.exbridge.jp'), true)) { echo '<script src="https://kurage.exbridge.jp/partner-bar.js" defer></script>'; } // 共通ヘッダーと再販パートナー募集（kurage_web/partner-bar.js・当社の公開先だけ） ?>
 </body>
 </html>
