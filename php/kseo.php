@@ -317,6 +317,27 @@ function kseo_absolute_url(string $base, string $href): string
  *
  * @return array{status:int,body:string,ctype:string,elapsed:float,final:string,error:string}
  */
+/**
+ * バイト列を、宣言された文字コードで UTF-8 に読み替える（2026-10-27）。
+ * EUC-JP・Shift_JIS のサイト（古いカラーミーショップなど）を UTF-8 のまま読み、
+ * 「titleが無い」「本文0文字」と誤判定していた。考え方は ktrackgeo_geo.php の ktg_geo_decode と同じ。
+ */
+function kseo_to_utf8(string $body, string $ctype): string
+{
+    if ($body === '' || !function_exists('mb_convert_encoding')) { return $body; }
+    $cs = '';
+    if (preg_match('/charset=["\']?([\w\-]+)/i', $ctype, $m)) { $cs = $m[1]; }
+    elseif (preg_match('/<meta[^>]+charset=["\']?([\w\-]+)/i', substr($body, 0, 4096), $m)) { $cs = $m[1]; }
+    if ($cs !== '' && !preg_match('/^utf-?8$/i', $cs)) {
+        $out = @mb_convert_encoding($body, 'UTF-8', $cs);
+        if (is_string($out) && $out !== '') { return $out; }
+    }
+    if ($cs === '' && function_exists('mb_check_encoding') && !mb_check_encoding($body, 'UTF-8')) {
+        return (string)@mb_convert_encoding($body, 'UTF-8', 'SJIS-win,EUC-JP,UTF-8');
+    }
+    return $body;
+}
+
 function kseo_fetch(string $url): array
 {
     $started = microtime(true);
@@ -346,7 +367,7 @@ function kseo_fetch(string $url): array
         $result['status'] = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $result['ctype']  = (string)curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $result['final']  = (string)curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
-        $result['body']   = substr((string)$body, 0, KSEO_MAX_HTML);
+        $result['body']   = kseo_to_utf8(substr((string)$body, 0, KSEO_MAX_HTML), $result['ctype']);
         curl_close($ch);
         return $result;
     }
@@ -373,6 +394,7 @@ function kseo_fetch(string $url): array
             $result['ctype'] = trim(substr($line, 13));
         }
     }
+    $result['body'] = kseo_to_utf8($result['body'], $result['ctype']);
     return $result;
 }
 
