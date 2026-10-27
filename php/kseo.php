@@ -483,8 +483,10 @@ function kseo_parse_page(string $url, string $html, int $status, float $elapsed)
             if ($rel !== '' && in_array('canonical', preg_split('/\s+/', $rel) ?: [], true)
                 && !empty($a['href'])) {
                 $page['canonical'] = kseo_absolute_url($url, $a['href']);
+                // 日本語のURLは、canonical が %エンコード・ページのURLがそのまま、と書き方だけ違うことがある。
+                // 書き方をそろえてから比べる（以前は同じURLを「別ページを指す」と誤判定していた（2026-10-27））。
                 $page['canonical_conflict'] =
-                    kseo_normalize_url($page['canonical']) !== kseo_normalize_url($url);
+                    rawurldecode(kseo_normalize_url($page['canonical'])) !== rawurldecode(kseo_normalize_url($url));
                 break;
             }
         }
@@ -986,12 +988,12 @@ function kseo_run_audit(string $base_url, int $max_pages): array
         }
     }
 
-    // sitemap.xml
+    // sitemap.xml（All in One SEO などは <loc><![CDATA[…]]></loc> と書く。以前はこれを読めず「sitemap.xml が見つかりません」と誤判定していた（2026-10-27））
     $candidates = array_filter([$site['robots_sitemap'], kseo_absolute_url($base_url, '/sitemap.xml')]);
     foreach ($candidates as $candidate) {
         $s = kseo_fetch($candidate);
         if ($s['status'] <= 0 || $s['status'] >= 400 || $s['body'] === '') { continue; }
-        if (!preg_match_all('#<loc>\s*([^<\s]+)\s*</loc>#i', $s['body'], $locs)) { continue; }
+        if (!preg_match_all('#<loc>\s*(?:<!\[CDATA\[)?\s*([^<\s\]]+)\s*(?:\]\]>)?\s*</loc>#i', $s['body'], $locs)) { continue; }
         $site['sitemap_found'] = true;
         // サイトマップの一覧（sitemapindex。WordPress の wp-sitemap.xml など）なら、中の子サイトマップを開いてページのURLを集める。
         // 以前は子サイトマップ（.xml）そのものをページとして診断し、「titleが無い」などの誤判定を出していた（2026-10-27）。
@@ -1001,7 +1003,7 @@ function kseo_run_audit(string $base_url, int $max_pages): array
             foreach (array_slice($locs[1], 0, 5) as $child) {
                 $c = kseo_fetch(html_entity_decode($child, ENT_QUOTES, 'UTF-8'));
                 if ($c['status'] <= 0 || $c['status'] >= 400 || $c['body'] === '') { continue; }
-                if (preg_match_all('#<loc>\s*([^<\s]+)\s*</loc>#i', $c['body'], $cl)) {
+                if (preg_match_all('#<loc>\s*(?:<!\[CDATA\[)?\s*([^<\s\]]+)\s*(?:\]\]>)?\s*</loc>#i', $c['body'], $cl)) {
                     $locs_found = array_merge($locs_found, $cl[1]);
                 }
             }
