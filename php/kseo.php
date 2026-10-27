@@ -971,8 +971,23 @@ function kseo_run_audit(string $base_url, int $max_pages): array
         if ($s['status'] <= 0 || $s['status'] >= 400 || $s['body'] === '') { continue; }
         if (!preg_match_all('#<loc>\s*([^<\s]+)\s*</loc>#i', $s['body'], $locs)) { continue; }
         $site['sitemap_found'] = true;
-        foreach ($locs[1] as $loc) {
-            $site['sitemap_urls'][] = kseo_normalize_url(html_entity_decode($loc, ENT_QUOTES, 'UTF-8'));
+        // サイトマップの一覧（sitemapindex。WordPress の wp-sitemap.xml など）なら、中の子サイトマップを開いてページのURLを集める。
+        // 以前は子サイトマップ（.xml）そのものをページとして診断し、「titleが無い」などの誤判定を出していた（2026-10-27）。
+        $locs_found = $locs[1];
+        if (stripos($s['body'], '<sitemapindex') !== false) {
+            $locs_found = [];
+            foreach (array_slice($locs[1], 0, 5) as $child) {
+                $c = kseo_fetch(html_entity_decode($child, ENT_QUOTES, 'UTF-8'));
+                if ($c['status'] <= 0 || $c['status'] >= 400 || $c['body'] === '') { continue; }
+                if (preg_match_all('#<loc>\s*([^<\s]+)\s*</loc>#i', $c['body'], $cl)) {
+                    $locs_found = array_merge($locs_found, $cl[1]);
+                }
+            }
+        }
+        foreach ($locs_found as $loc) {
+            $u = kseo_normalize_url(html_entity_decode($loc, ENT_QUOTES, 'UTF-8'));
+            if (preg_match('#\.xml(\.gz)?$#i', (string)parse_url($u, PHP_URL_PATH))) { continue; }   // 残った子サイトマップはページではない
+            $site['sitemap_urls'][] = $u;
         }
         if ($site['sitemap_urls']) { break; }
     }
