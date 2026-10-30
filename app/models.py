@@ -53,6 +53,7 @@ class AuditDetail(BaseModel):
     finished_at: str | None = None
     advice: str | None = None
     advice_provider: str | None = None
+    lite: bool = False
 
 
 class AuditCreate(BaseModel):
@@ -77,3 +78,4 @@ class UsageStatus(BaseModel):
     advice_limit: int | None
     sites: int
     sites_limit: int
+    lite: bool = False

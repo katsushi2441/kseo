@@ -125,6 +125,9 @@ function renderAudit(audit) {
       </div>
     </div>
     <div class="cats">${cats}</div>
+    ${audit.lite ? `
+    <p class="note"><b>デモ版のため、点数と件数の概要だけを表示しています。</b>どの項目が問題か、実測の値、直し方、AIの改善案、診断書のダウンロードは、導入版でご利用いただけます。</p>
+    ` : `
     <h3>指摘</h3>
     ${findings}
     <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
@@ -132,6 +135,7 @@ function renderAudit(audit) {
       <button data-report="${escapeHtml(audit.id)}">診断書をダウンロード</button>
     </div>
     <div id="adviceBox">${audit.advice ? `<div class="advice"><h3>改善案</h3>${escapeHtml(audit.advice)}</div>` : ""}</div>
+    `}
   `;
   panel.scrollIntoView({ behavior: "smooth", block: "start" });
 }

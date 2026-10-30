@@ -26,6 +26,8 @@ CRAWL_TIMEOUT = float(os.environ.get("KSEO_CRAWL_TIMEOUT", "20"))
 CRAWL_DELAY = float(os.environ.get("KSEO_CRAWL_DELAY", "1.0"))
 FREE_PAGES_PER_AUDIT = int(os.environ.get("KSEO_FREE_PAGES_PER_AUDIT", "5"))
 PAID_PAGES_PER_AUDIT = int(os.environ.get("KSEO_PAID_PAGES_PER_AUDIT", "50"))
+# デモ版: 管理者以外には点数と件数だけを返す（指摘の中身・ページ別の実測・改善案・診断書を出さない）
+LITE = os.environ.get("KSEO_LITE", "").strip().lower() in ("1", "true", "yes")
 MAX_HTML_BYTES = int(os.environ.get("KSEO_MAX_HTML_BYTES", str(3 * 1024 * 1024)))
 
 # LLM。無料枠と管理者は自社GPUのGemma、課金された実行だけDeepSeek。

@@ -49,6 +49,15 @@ def is_admin(username: str) -> bool:
     return normalize(username) in config.ADMIN_USERS
 
 
+def is_lite(owner: str) -> bool:
+    return config.LITE and not is_admin(owner)
+
+
+def require_full(owner: str) -> None:
+    if is_lite(owner):
+        raise HTTPException(status_code=403, detail="デモ版では点数と件数の概要だけを表示しています。指摘の中身・改善案・診断書は導入版でご利用ください。")
+
+
 def authenticated_owner(
     x_kseo_token: str = Header(default=""),
     x_kseo_user: str = Header(default=""),
@@ -87,6 +96,7 @@ def usage_status(owner: str) -> UsageStatus:
         advice_limit=None if admin else config.FREE_ADVICE_PER_MONTH,
         sites=db.count_sites(owner),
         sites_limit=config.MAX_SITES_PER_USER,
+        lite=is_lite(owner),
     )
 
 
@@ -230,6 +240,10 @@ async def new_audit(
 def audit(audit_id: str, owner: str = Depends(authenticated_owner)) -> AuditDetail:
     row = require_audit(owner, audit_id)
     advice = db.latest_advice(audit_id)
+    lite = is_lite(owner)
+    if lite:
+        row = {**row, "findings": [], "pages": []}
+        advice = None
     return AuditDetail(
         id=row["id"],
         site_id=row["site_id"],
@@ -245,6 +259,7 @@ def audit(audit_id: str, owner: str = Depends(authenticated_owner)) -> AuditDeta
         finished_at=row["finished_at"],
         advice=advice["body"] if advice else None,
         advice_provider=advice["provider"] if advice else None,
+        lite=lite,
     )
 
 
@@ -253,6 +268,7 @@ async def build_advice(audit_id: str, owner: str = Depends(authenticated_owner))
     row = require_audit(owner, audit_id)
     if row["status"] != "done":
         raise HTTPException(status_code=400, detail="完了した監査に対してのみ生成できます。")
+    require_full(owner)
     enforce_limit(owner, "advice")
 
     paid = not is_admin(owner)
@@ -294,6 +310,7 @@ async def build_advice(audit_id: str, owner: str = Depends(authenticated_owner))
 @app.get("/api/audits/{audit_id}/report.md", response_class=PlainTextResponse)
 def report_markdown(audit_id: str, owner: str = Depends(authenticated_owner)) -> PlainTextResponse:
     row = require_audit(owner, audit_id)
+    require_full(owner)
     site = db.get_site(row["site_id"]) or {}
     advice = db.latest_advice(audit_id)
     text = report.build_markdown(site, row, advice["body"] if advice else None)
