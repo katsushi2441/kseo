@@ -45,6 +45,7 @@ if (!defined('KSEO_MAX_HTML'))     { define('KSEO_MAX_HTML', 3 * 1024 * 1024); }
 if (!defined('KSEO_KEEP_AUDITS'))  { define('KSEO_KEEP_AUDITS', 50); }
 if (!defined('KSEO_USER_AGENT'))   { define('KSEO_USER_AGENT', 'KurageSEO/1.0 (+https://kseo.exbridge.jp/)'); }
 if (!defined('KSEO_ALLOW_PRIVATE')){ define('KSEO_ALLOW_PRIVATE', false); }
+if (!defined('KSEO_LITE'))         { define('KSEO_LITE', false); }   // true で点数と件数だけを出す（指摘・ページ別の実測・診断書を出さない。デモ版用）
 
 // ---------------------------------------------------------------------------
 // 判定の閾値。Python版 app/audit_rules.py と同じ値にしてある。
@@ -1290,7 +1291,7 @@ if (empty($_SESSION['kseo_csrf'])) {
 $csrf = (string)$_SESSION['kseo_csrf'];
 
 // --- 診断書のダウンロード
-if ($authed && isset($_GET['report'])) {
+if ($authed && isset($_GET['report']) && !KSEO_LITE) {
     $audit = kseo_load_audit((string)$_GET['report']);
     if ($audit) {
         header('Content-Type: text/markdown; charset=utf-8');
@@ -1456,6 +1457,9 @@ footer{text-align:center;color:var(--muted);font-size:.83rem;padding:16px}
         <?php endforeach; ?>
       </div>
 
+      <?php if (KSEO_LITE): ?>
+      <p class="note"><b>デモ版のため、点数と件数の概要だけを表示しています。</b>どの項目が問題か、実測の値、直し方、ページ別の実測値、診断書のダウンロードは、導入版でご利用いただけます。</p>
+      <?php else: ?>
       <h3>指摘</h3>
       <?php if (!$audit['findings']): ?>
         <p class="note">指摘はありません。</p>
@@ -1492,6 +1496,7 @@ footer{text-align:center;color:var(--muted);font-size:.83rem;padding:16px}
         <p style="margin-top:16px">
           <a href="?report=<?= kseo_h($audit['id']) ?>"><button type="button">診断書をダウンロード</button></a>
         </p>
+      <?php endif; ?>
       <?php endif; ?>
     </div>
   <?php endif; ?>
